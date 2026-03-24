@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Attestation Record (AR) v0.1",
+  "description": "Formal schema for nProtocol Attestation Records — Campo de Provas field documentation.",
+  "type": "object",
+  "properties": {
+    "ar_version": {
+      "type": "string",
+      "const": "0.1",
+      "description": "Version of the Attestation Record format."
+    },
+    "node_id": {
+      "type": "string",
+      "description": "Author's Nostr public key (npub format)."
+    },
+    "timestamp_iso": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of AR creation in ISO 8601 format."
+    },
+    "problem": {
+      "type": "object",
+      "description": "The problem this delivery addresses.",
+      "properties": {
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the original bounty issue."
+        },
+        "description": {
+          "type": "string",
+          "description": "What was broken or missing."
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "infra",
+            "coordination",
+            "protocol",
+            "ui",
+            "security"
+          ],
+          "description": "Technical domain of the problem."
+        }
+      },
+      "required": [
+        "source_url",
+        "description",
+        "domain"
+      ],
+      "additionalProperties": false
+    },
+    "delivery": {
+      "type": "object",
+      "description": "The solution delivered.",
+      "properties": {
+        "commit_sha": {
+          "type": "string",
+          "description": "Hash of the merged commit resolving the problem."
+        },
+        "approach_summary": {
+          "type": "string",
+          "description": "Root cause and solution in 2–3 lines."
+        },
+        "hours_spent": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Time spent on the delivery, in hours."
+        }
+      },
+      "required": [
+        "commit_sha",
+        "approach_summary",
+        "hours_spent"
+      ],
+      "additionalProperties": false
+    },
+    "recognition": {
+      "type": "object",
+      "description": "The recognition received after delivery.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "bounty",
+            "zap",
+            "grant"
+          ],
+          "description": "Type of recognition."
+        },
+        "amount_sats": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Value received, in satoshis."
+        },
+        "recognized_by": {
+          "type": "string",
+          "description": "Nostr npub or public address of the payer."
+        },
+        "tx_proof": {
+          "type": "string",
+          "description": "Paid Lightning invoice or transaction ID. Links this AR to a verifiable on-chain event."
+        }
+      },
+      "required": [
+        "type",
+        "amount_sats",
+        "recognized_by",
+        "tx_proof"
+      ],
+      "additionalProperties": false
+    },
+    "recognition_ratio": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Calculated recognition efficiency: amount_sats / hours_spent."
+    },
+    "protocol_note": {
+      "type": "string",
+      "description": "Axiological analysis written by the Judgment layer. What this delivery reveals about ex-post coordination. The only field no tool fills."
+    },
+    "nostr_event_id": {
+      "type": "string",
+      "description": "ID of the published Nostr kind:30023 event containing this AR."
+    }
+  },
+  "required": [
+    "ar_version",
+    "node_id",
+    "timestamp_iso",
+    "problem",
+    "delivery",
+    "recognition",
+    "recognition_ratio",
+    "protocol_note",
+    "nostr_event_id"
+  ],
+  "additionalProperties": false
+}
